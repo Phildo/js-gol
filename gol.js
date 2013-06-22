@@ -9,15 +9,16 @@ function GameOfLife(params)
     this.parentContainer.width  = 100;
     this.parentContainer.height = 100;
   }
-  if(params.width)   this.width   = params.width;   else this.width   = 0;
-  if(params.height)  this.height  = params.height;  else this.height  = 0;
-  if(params.size)    this.size    = params.size;    else this.size    = 0;
-  if(params.padding) this.padding = params.padding; else this.padding = Math.floor(this.size*0.2);
-  if(params.xlen)    this.xlen    = params.xlen;    else this.xlen    = 0;
-  if(params.ylen)    this.ylen    = params.ylen;    else this.ylen    = 0;
-  if(params.color)   this.color   = params.color;   else this.color   = "#000000";
-  if(params.bgcolor) this.bgcolor = params.bgcolor; else this.bgcolor = "#FFFFFF";
-  if(params.speed)   this.speed   = params.speed;   else this.speed   = 60;//ticks per minute
+  if(params.width)    this.width    = params.width;    else this.width    = 0;
+  if(params.height)   this.height   = params.height;   else this.height   = 0;
+  if(params.size)     this.size     = params.size;     else this.size     = 0;
+  if(params.padding)  this.padding  = params.padding;  else this.padding  = Math.floor(this.size*0.2);
+  if(params.xlen)     this.xlen     = params.xlen;     else this.xlen     = 0;
+  if(params.ylen)     this.ylen     = params.ylen;     else this.ylen     = 0;
+  if(params.color)    this.color    = params.color;    else this.color    = "#000000";
+  if(params.bgcolor)  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "#FFFFFF";
+  if(params.speed)    this.speed    = params.speed;    else this.speed    = 60;//ticks per minute
+  if(params.callback) this.callback = params.callback; else this.callback = function(gol){};
 
   //Special cases of inferring certain defaults
   if(!this.xlen && !this.ylen)
@@ -143,6 +144,7 @@ function GameOfLife(params)
     commitAllNodes();
     drawAllNodes();
     decideAllNodes();
+    self.callback(self);
   };
 
   this.play  = function(){ if(!ticker) { tick(); ticker = setInterval(tick,Math.round(60000/this.speed)); } };
@@ -165,6 +167,22 @@ function GameOfLife(params)
     for(var y = 0; y < this.ylen; y++)
       for(var x = 0; x < this.xlen; x++)
         nodes[y*this.xlen+x].next = pattern[y*this.xlen+x];
+  };
+  this.getPattern = function()
+  {
+    var pattern = [];
+    for(var y = 0; y < this.ylen; y++)
+      for(var x = 0; x < this.xlen; x++)
+        pattern[y*this.xlen+x] = nodes[y*this.xlen+x].state;
+    return pattern;
+  };
+  this.setNode = function(x,y)
+  {
+    nodes[y*this.xlen+x].next = 1;
+  };
+  this.clearNode = function(x,y)
+  {
+    nodes[y*this.xlen+x].next = 0;
   };
 
   this.canvas = document.createElement('canvas');
