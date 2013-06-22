@@ -2,19 +2,26 @@
 <head>
 <title>Game Of Life JS API Sample</title>
 <link rel="icon" type="image/png" href="pgol.png" />
-<script type="text/javascript" src="jGameFrame/canvas.js"></script>
-<script type="text/javascript" src="jGameFrame/game.js"></script>
+<script type="text/javascript" src="gol.js"></script>
 <script type="text/javascript">
 var load = function()
 {
   var gol = new GameOfLife(
     {
       "parentContainer":document.getElementById("container"),
-      "width":50,
-      "height":50,
+      "width":500,
+      "height":500,
       "size":10,
-      "color":"#000000"
+      "padding":2,
+      "speed":600,
+      "color":"#000000",
+      "startingGrid":[0,0,0,0,0,
+                      0,0,1,0,0,
+                      0,0,0,1,0,
+                      0,1,1,1,0,
+                      0,0,0,0,0]
     });
+  gol.randomize();
 }
 
 </script>
