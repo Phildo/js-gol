@@ -1,0 +1,26 @@
+<html>
+<head>
+<title>Game Of Life JS API Sample</title>
+<link rel="icon" type="image/png" href="pgol.png" />
+<script type="text/javascript" src="jGameFrame/canvas.js"></script>
+<script type="text/javascript" src="jGameFrame/game.js"></script>
+<script type="text/javascript">
+var load = function()
+{
+  var gol = new GameOfLife(
+    {
+      "parentContainer":document.getElementById("container"),
+      "width":50,
+      "height":50,
+      "size":10,
+      "color":"#000000"
+    });
+}
+
+</script>
+</head>
+<body onload="load()">
+<div id="container">
+</div>
+</body>
+</html>
