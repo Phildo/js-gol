@@ -110,6 +110,9 @@ var load = function()
         "callback":function(gol) { iconLogoTicks++; if(iconLogoTicks % 500 == 0) gol.randomize(); }
       }
     );
+
+    defaultGOL = new GameOfLife();
+    document.getElementById('default').appendChild(defaultGOL.parentContainer); //'parentContainer' div created by pgol if none is supplied on construction
 }
 
 </script>
@@ -117,5 +120,6 @@ var load = function()
 <body onload="load()">
 <span id="full_logo" onmouseover="fullLogoGOL.play(); document.getElementById('full_logo').onmouseover=';';"></span><br />
 <span id="icon_logo" onmouseover="iconLogoGOL.play(); document.getElementById('icon_logo').onmouseover=';'"></span>
+<span id="default"></span>
 </body>
 </html>

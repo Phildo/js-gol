@@ -2,9 +2,12 @@ function GameOfLife(params)
 {
   var self = this;
 
+  if(!params) params = {};
+
   if(params.hasOwnProperty('debug')) this.debug = params.debug; else this.debug = false;
   if(!(this.parentContainer = params.parentContainer))
   {
+    console.log('ello');
     this.parentContainer = document.createElement('div');
     this.parentContainer.width  = 100;
     this.parentContainer.height = 100;
@@ -25,8 +28,8 @@ function GameOfLife(params)
   if(!this.xlen && !this.ylen)
   {
     if(!this.size) this.size = 10;
-    if(!this.width)  this.width  = this.parentContainer.offsetWidth;
-    if(!this.height) this.height = this.parentContainer.offsetHeight;
+    if(!this.width)  this.width  = this.parentContainer.offsetWidth;  if(!this.width)  this.width  = this.parentContainer.width;
+    if(!this.height) this.height = this.parentContainer.offsetHeight; if(!this.height) this.height = this.parentContainer.height;
     this.xlen = Math.floor(this.width/this.size);
     this.ylen = Math.floor(this.height/this.size);
   }
@@ -176,6 +179,10 @@ function GameOfLife(params)
       for(var x = 0; x < this.xlen; x++)
         pattern[y*this.xlen+x] = nodes[y*this.xlen+x].state;
     return pattern;
+  };
+  this.getNode = function(x,y)
+  {
+    return nodes[y*this.xlen+x].state;
   };
   this.setNode = function(x,y)
   {
