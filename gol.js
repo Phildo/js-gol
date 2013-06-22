@@ -2,23 +2,24 @@ function GameOfLife(params)
 {
   var self = this;
 
-  if(params.debug) this.debug = params.debug; else this.debug = false;
+  if(params.hasOwnProperty('debug')) this.debug = params.debug; else this.debug = false;
   if(!(this.parentContainer = params.parentContainer))
   {
     this.parentContainer = document.createElement('div');
     this.parentContainer.width  = 100;
     this.parentContainer.height = 100;
   }
-  if(params.width)    this.width    = params.width;    else this.width    = 0;
-  if(params.height)   this.height   = params.height;   else this.height   = 0;
-  if(params.size)     this.size     = params.size;     else this.size     = 0;
-  if(params.padding)  this.padding  = params.padding;  else this.padding  = Math.floor(this.size*0.2);
-  if(params.xlen)     this.xlen     = params.xlen;     else this.xlen     = 0;
-  if(params.ylen)     this.ylen     = params.ylen;     else this.ylen     = 0;
-  if(params.color)    this.color    = params.color;    else this.color    = "#000000";
-  if(params.bgcolor)  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "#FFFFFF";
-  if(params.speed)    this.speed    = params.speed;    else this.speed    = 60;//ticks per minute
-  if(params.callback) this.callback = params.callback; else this.callback = function(gol){};
+  if(params.hasOwnProperty('width'))    this.width    = params.width;    else this.width    = 0;
+  if(params.hasOwnProperty('height'))   this.height   = params.height;   else this.height   = 0;
+  if(params.hasOwnProperty('size'))     this.size     = params.size;     else this.size     = 0;
+  if(params.hasOwnProperty('padding'))  this.padding  = params.padding;  else this.padding  = Math.floor(this.size*0.2);
+  if(params.hasOwnProperty('xlen'))     this.xlen     = params.xlen;     else this.xlen     = 0;
+  if(params.hasOwnProperty('ylen'))     this.ylen     = params.ylen;     else this.ylen     = 0;
+  if(params.hasOwnProperty('color'))    this.color    = params.color;    else this.color    = "#000000";
+  if(params.hasOwnProperty('bgcolor'))  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "#FFFFFF";
+  if(params.hasOwnProperty('speed'))    this.speed    = params.speed;    else this.speed    = 60;//ticks per minute
+  if(params.hasOwnProperty('autoplay')) this.autoplay = params.autoplay; else this.autoplay = false;
+  if(params.hasOwnProperty('callback')) this.callback = params.callback; else this.callback = function(gol){};
 
   //Special cases of inferring certain defaults
   if(!this.xlen && !this.ylen)
@@ -36,7 +37,7 @@ function GameOfLife(params)
     this.height = this.size*this.ylen;
   }
 
-  if(params.startingGrid && params.startingGrid.length == this.xlen*this.ylen) this.startingGrid = params.startingGrid;
+  if(params.hasOwnProperty('startingGrid') && params.startingGrid.length == this.xlen*this.ylen) this.startingGrid = params.startingGrid;
 
   var nodes = [];
   var ticker = null;
@@ -195,5 +196,6 @@ function GameOfLife(params)
 
   generateAllNodes();
   if(this.startingGrid) this.setPattern(this.startingGrid);
-  this.play();
+  if(this.autoplay) this.play();
+  else tick();//do one tick to get startingGrid on board
 };

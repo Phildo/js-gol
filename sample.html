@@ -4,17 +4,19 @@
 <link rel="icon" type="image/png" href="pgol.png" />
 <script type="text/javascript" src="gol.js"></script>
 <script type="text/javascript">
+var gol;
 var load = function()
 {
   var ticks = 0; //used for callback
-  var gol = new GameOfLife(
+  gol = new GameOfLife(
     {
       "parentContainer":document.getElementById("container"),
-      "xlen":42,
-      "ylen":23,
-      "size":10,
-      "padding":2,
-      "speed":800,
+      "xlen":42, //grid width (nodes)
+      "ylen":23, //grid height (nodes)
+      "size":6, //node size (pixels) NOTE- includes padding
+      "padding":0, //space between nodes (pixels) NOTE- even numbers will look better, won't draw in-between pixels
+      "speed":1000,//ticks per minute
+      "autoplay":false,
       "startingGrid":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -45,7 +47,7 @@ var load = function()
 </script>
 </head>
 <body onload="load()">
-<div id="container">
+<div id="container" onmouseover="gol.play();">
 </div>
 </body>
 </html>
