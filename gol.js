@@ -9,17 +9,32 @@ function GameOfLife(params)
     this.parentContainer.width  = 100;
     this.parentContainer.height = 100;
   }
-  this.width  = this.parentContainer.offsetWidth;
-  this.height = this.parentContainer.offsetHeight;
-  if(params.width)   this.width   = params.width;
-  if(params.height)  this.height  = params.height;
-  if(params.size)    this.size    = params.size;    else this.size    = 10;
+  if(params.width)   this.width   = params.width;   else this.width   = 0;
+  if(params.height)  this.height  = params.height;  else this.height  = 0;
+  if(params.size)    this.size    = params.size;    else this.size    = 0;
   if(params.padding) this.padding = params.padding; else this.padding = Math.floor(this.size*0.2);
-  if(params.xlen)    this.xlen    = params.xlen;    else this.xlen    = Math.floor(this.width/this.size);
-  if(params.ylen)    this.ylen    = params.ylen;    else this.ylen    = Math.floor(this.height/this.size);
+  if(params.xlen)    this.xlen    = params.xlen;    else this.xlen    = 0;
+  if(params.ylen)    this.ylen    = params.ylen;    else this.ylen    = 0;
   if(params.color)   this.color   = params.color;   else this.color   = "#000000";
   if(params.bgcolor) this.bgcolor = params.bgcolor; else this.bgcolor = "#FFFFFF";
   if(params.speed)   this.speed   = params.speed;   else this.speed   = 60;//ticks per minute
+
+  //Special cases of inferring certain defaults
+  if(!this.xlen && !this.ylen)
+  {
+    if(!this.size) this.size = 10;
+    if(!this.width)  this.width  = this.parentContainer.offsetWidth;
+    if(!this.height) this.height = this.parentContainer.offsetHeight;
+    this.xlen = Math.floor(this.width/this.size);
+    this.ylen = Math.floor(this.height/this.size);
+  }
+  if(!this.width && !this.height)
+  {
+    if(!this.size) this.size = 10;
+    this.width  = this.size*this.xlen;
+    this.height = this.size*this.ylen;
+  }
+
   if(params.startingGrid && params.startingGrid.length == this.xlen*this.ylen) this.startingGrid = params.startingGrid;
 
   var nodes = [];
@@ -36,14 +51,14 @@ function GameOfLife(params)
       this.findNeighbors = function(nodes, xlen, ylen)
       {
         this.neighbors = [];
-        if(nodes[(this.y-1)*ylen+(this.x-1)]) this.neighbors.push(nodes[(this.y-1)*ylen+(this.x-1)]);
-        if(nodes[(this.y  )*ylen+(this.x-1)]) this.neighbors.push(nodes[(this.y  )*ylen+(this.x-1)]);
-        if(nodes[(this.y+1)*ylen+(this.x-1)]) this.neighbors.push(nodes[(this.y+1)*ylen+(this.x-1)]);
-        if(nodes[(this.y-1)*ylen+(this.x  )]) this.neighbors.push(nodes[(this.y-1)*ylen+(this.x  )]);
-        if(nodes[(this.y+1)*ylen+(this.x  )]) this.neighbors.push(nodes[(this.y+1)*ylen+(this.x  )]);
-        if(nodes[(this.y-1)*ylen+(this.x+1)]) this.neighbors.push(nodes[(this.y-1)*ylen+(this.x+1)]);
-        if(nodes[(this.y  )*ylen+(this.x+1)]) this.neighbors.push(nodes[(this.y  )*ylen+(this.x+1)]);
-        if(nodes[(this.y+1)*ylen+(this.x+1)]) this.neighbors.push(nodes[(this.y+1)*ylen+(this.x+1)]);
+        if(this.x > 0        && this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x-1)]);
+        if(this.x > 0                            ) this.neighbors.push(nodes[(this.y  )*xlen+(this.x-1)]);
+        if(this.x > 0        && this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x-1)]);
+        if(                     this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x  )]);
+        if(                     this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x  )]);
+        if(this.x < (xlen-1) && this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x+1)]);
+        if(this.x < (xlen-1)                     ) this.neighbors.push(nodes[(this.y  )*xlen+(this.x+1)]);
+        if(this.x < (xlen-1) && this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x+1)]);
       };
 
       this.decide = function()
@@ -79,7 +94,7 @@ function GameOfLife(params)
   {
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        nodes[y*self.ylen+x] = new Node(x,y);
+        nodes[y*self.xlen+x] = new Node(x,y);
     findAllNeighbors();
   }
 
@@ -87,21 +102,21 @@ function GameOfLife(params)
   {
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        nodes[y*self.ylen+x].findNeighbors(nodes, self.xlen, self.ylen);
+        nodes[y*self.xlen+x].findNeighbors(nodes, self.xlen, self.ylen);
   }
 
   var decideAllNodes = function()
   {
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        nodes[y*self.ylen+x].decide();
+        nodes[y*self.xlen+x].decide();
   }
 
   var commitAllNodes = function()
   {
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        nodes[y*self.ylen+x].commit();
+        nodes[y*self.xlen+x].commit();
   }
 
   var drawAllNodes = function()
@@ -111,7 +126,7 @@ function GameOfLife(params)
 
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        drawNode(nodes[y*self.ylen+x]);
+        drawNode(nodes[y*self.xlen+x]);
   }
 
   var drawNode = function(node)
@@ -130,32 +145,34 @@ function GameOfLife(params)
     decideAllNodes();
   };
 
-  this.play  = function(){ if(!ticker) ticker = setInterval(tick,Math.round(60000/this.speed)) };
+  this.play  = function(){ if(!ticker) { tick(); ticker = setInterval(tick,Math.round(60000/this.speed)); } };
   this.pause = function(){ if(ticker)  ticker = clearInterval(ticker); }
 
   this.clear = function()
   {
     for(var x = 0; x < this.xlen; x++)
       for(var y = 0; y < this.ylen; y++)
-        nodes[y*this.ylen+x].next = 0;
+        nodes[y*this.xlen+x].next = 0;
   };
   this.randomize = function()
   {
     for(var x = 0; x < this.xlen; x++)
       for(var y = 0; y < this.ylen; y++)
-        nodes[y*this.ylen+x].next = Math.round(Math.random());
+        nodes[y*this.xlen+x].next = Math.round(Math.random());
   };
   this.setPattern = function(pattern)
   {
-    for(var x = 0; x < this.xlen; x++)
-      for(var y = 0; y < this.ylen; y++)
-        nodes[y*this.ylen+x].next = pattern[y*this.ylen+x];
+    for(var y = 0; y < this.ylen; y++)
+      for(var x = 0; x < this.xlen; x++)
+        nodes[y*this.xlen+x].next = pattern[y*this.xlen+x];
   };
 
   this.canvas = document.createElement('canvas');
   this.canvas.context = this.canvas.getContext('2d');
   this.canvas.width  = this.width;
   this.canvas.height = this.height;
+  this.canvas.context.imageSmoothingEnabled = false;
+  this.canvas.context.webkitImageSmoothingEnabled = false;
   this.parentContainer.appendChild(this.canvas);
 
   generateAllNodes();
