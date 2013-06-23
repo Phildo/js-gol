@@ -1,7 +1,6 @@
 <html>
 <head>
 <title>Game Of Life JS API Sample</title>
-<link rel="icon" type="image/png" href="pgol.png" />
 <script type="text/javascript" src="gol.js"></script>
 <script type="text/javascript">
 var defaultGOL;
@@ -110,14 +109,17 @@ var load = function()
 function resetLogo()
 {
   logoGOL.setPattern(brokenGliderLogoPattern);
+  logoGOL.parentContainer.onmouseover=logoGOL.play;
   logoTicks = 0;
-  logoGOL.play();
+  logoGOL.tick();
+  console.log(logoGOL.speed);
 }
 
 </script>
 </head>
 <body onload="load()">
-<span id="default" onclick="defaultGOL.play();"></span>
+<a href="https://github.com/Phildo/js-gol">github</a><br />
+<span id="default" onclick="defaultGOL.play();"></span><br />
 <span id="logo"   onmouseover="logoGOL.play();"   onclick="resetLogo();" ></span><br />
 <span id="glider" onmouseover="gliderGOL.play();" onclick="gliderGOL.randomize();"></span>
 </body>

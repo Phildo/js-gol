@@ -2,6 +2,7 @@ js-gol
 ======
 
 Javascript API for conway's game of life. (http://en.wikipedia.org/wiki/Conway's_Game_of_Life)
+
 Sample page hosted here- http://www.brokenglider.com/misc/js-gol/sample.html (at least, it WAS hosted there as of Jun 22 2013...)
 
 Easily create instances of CGoL with custom sizes, colors, starting patterns, etc...
@@ -37,7 +38,7 @@ Format of the params:
                       0,0,0,0,0,0,0,0,0,0, //NOTE- if array is not exact size of grid, this parameter
                       0,0,0,0,0,0,0,0,0,0, //will be ignored.
                       0,0,0,0,0,0,0,0,0,0,
-                      0,0,0,0,0,1,1,0,0,0,
+                      0,0,0,0,0,1,0,0,0,0,
                       0,0,0,0,0,0,1,0,0,0,
                       0,0,0,0,1,1,1,0,0,0,
                       0,0,0,0,0,0,0,0,0,0,
@@ -45,7 +46,7 @@ Format of the params:
                       0,0,0,0,0,0,0,0,0,0]
     }
 
-API access:
+API accessors:
 
     gol.play(); //Resumes the computation of the game of life if it is currently paused. If not, does nothing.
     gol.pause(); //Pauses the computation of the game of life if it is currently playing. If not, does nothing.

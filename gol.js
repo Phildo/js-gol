@@ -172,7 +172,7 @@ function GameOfLife(params)
     self.callback(self);
   };
 
-  this.play  = function(){ if(!ticker) { self.tick(); ticker = setInterval(self.tick,Math.round(60000/this.speed)); } };
+  this.play  = function(){ if(!ticker) { self.tick(); ticker = setInterval(self.tick,Math.round(60000/self.speed)); } };
   this.pause = function(){ if(ticker)  ticker = clearInterval(ticker); }
 
   this.clear = function()
