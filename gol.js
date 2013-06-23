@@ -7,7 +7,6 @@ function GameOfLife(params)
   if(params.hasOwnProperty('debug')) this.debug = params.debug; else this.debug = false;
   if(!(this.parentContainer = params.parentContainer))
   {
-    console.log('ello');
     this.parentContainer = document.createElement('div');
     this.parentContainer.width  = 100;
     this.parentContainer.height = 100;
@@ -15,12 +14,13 @@ function GameOfLife(params)
   if(params.hasOwnProperty('width'))    this.width    = params.width;    else this.width    = 0;
   if(params.hasOwnProperty('height'))   this.height   = params.height;   else this.height   = 0;
   if(params.hasOwnProperty('size'))     this.size     = params.size;     else this.size     = 0;
-  if(params.hasOwnProperty('padding'))  this.padding  = params.padding;  else this.padding  = Math.floor(this.size*0.2);
+  if(params.hasOwnProperty('padding'))  this.padding  = params.padding;  else this.padding  = 2;
   if(params.hasOwnProperty('xlen'))     this.xlen     = params.xlen;     else this.xlen     = 0;
   if(params.hasOwnProperty('ylen'))     this.ylen     = params.ylen;     else this.ylen     = 0;
   if(params.hasOwnProperty('color'))    this.color    = params.color;    else this.color    = "#000000";
   if(params.hasOwnProperty('bgcolor'))  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "#FFFFFF";
   if(params.hasOwnProperty('speed'))    this.speed    = params.speed;    else this.speed    = 60;//ticks per minute
+  if(params.hasOwnProperty('edge'))     this.edge     = params.edge;     else this.edge     = "wrap";
   if(params.hasOwnProperty('autoplay')) this.autoplay = params.autoplay; else this.autoplay = false;
   if(params.hasOwnProperty('callback')) this.callback = params.callback; else this.callback = function(gol){};
 
@@ -42,9 +42,6 @@ function GameOfLife(params)
 
   if(params.hasOwnProperty('startingGrid') && params.startingGrid.length == this.xlen*this.ylen) this.startingGrid = params.startingGrid;
 
-  var nodes = [];
-  var ticker = null;
-
   var Node = function(x,y)
   {
       this.x = x;
@@ -53,22 +50,41 @@ function GameOfLife(params)
       this.next = 0;
 
       this.neighbors = [];
-      this.findNeighbors = function(nodes, xlen, ylen)
+      this.findNeighbors = function(nodes, xlen, ylen, edgePolicy)
       {
         this.neighbors = [];
-        if(this.x > 0        && this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x-1)]);
-        if(this.x > 0                            ) this.neighbors.push(nodes[(this.y  )*xlen+(this.x-1)]);
-        if(this.x > 0        && this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x-1)]);
-        if(                     this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x  )]);
-        if(                     this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x  )]);
-        if(this.x < (xlen-1) && this.y > 0       ) this.neighbors.push(nodes[(this.y-1)*xlen+(this.x+1)]);
-        if(this.x < (xlen-1)                     ) this.neighbors.push(nodes[(this.y  )*xlen+(this.x+1)]);
-        if(this.x < (xlen-1) && this.y < (ylen-1)) this.neighbors.push(nodes[(this.y+1)*xlen+(this.x+1)]);
+        if(edgePolicy == "wrap")
+        {
+          this.neighbors.push(nodes[((this.y-1+ylen)%ylen)*xlen+((this.x-1+xlen)%xlen)]);
+          this.neighbors.push(nodes[( this.y             )*xlen+((this.x-1+xlen)%xlen)]);
+          this.neighbors.push(nodes[((this.y+1)     %ylen)*xlen+((this.x-1+xlen)%xlen)]);
+          this.neighbors.push(nodes[((this.y-1+ylen)%ylen)*xlen+( this.x             )]);
+          this.neighbors.push(nodes[((this.y+1)     %ylen)*xlen+( this.x             )]);
+          this.neighbors.push(nodes[((this.y-1+ylen)%ylen)*xlen+((this.x+1)     %xlen)]);
+          this.neighbors.push(nodes[( this.y             )*xlen+((this.x+1)     %xlen)]);
+          this.neighbors.push(nodes[((this.y+1)     %ylen)*xlen+((this.x+1)     %xlen)]);
+        }
+        else
+        {
+          var edgeNode;
+          if(edgePolicy == "set") edgeNode = setNode;
+          else                    edgeNode = clearNode;
+
+          if(this.x == 0        || this.y == 0       ) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y-1)*xlen+(this.x-1)]);
+          if(this.x == 0                             ) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y  )*xlen+(this.x-1)]);
+          if(this.x == 0        || this.y == (ylen-1)) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y+1)*xlen+(this.x-1)]);
+          if(                      this.y == 0       ) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y-1)*xlen+(this.x  )]);
+          if(                      this.y == (ylen-1)) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y+1)*xlen+(this.x  )]);
+          if(this.x == (xlen-1) || this.y == 0       ) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y-1)*xlen+(this.x+1)]);
+          if(this.x == (xlen-1)                      ) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y  )*xlen+(this.x+1)]);
+          if(this.x == (xlen-1) || this.y == (ylen-1)) this.neighbors.push(edgeNode); else this.neighbors.push(nodes[(this.y+1)*xlen+(this.x+1)]);
+        }
       };
 
+      var count;
       this.decide = function()
       {
-        var count = 0;
+        count = 0;
         for(var i = 0; i < this.neighbors.length; i++)
           count += this.neighbors[i].state;
 
@@ -95,6 +111,11 @@ function GameOfLife(params)
       this.commit = function(){ this.state = this.next; }
   };
 
+  var nodes = [];
+  var setNode   = new Node(-1,-1); setNode.state   = 1;
+  var clearNode = new Node(-1,-1); clearNode.state = 0;
+  var ticker = null;
+
   var generateAllNodes = function()
   {
     for(var x = 0; x < self.xlen; x++)
@@ -107,7 +128,7 @@ function GameOfLife(params)
   {
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
-        nodes[y*self.xlen+x].findNeighbors(nodes, self.xlen, self.ylen);
+        nodes[y*self.xlen+x].findNeighbors(nodes, self.xlen, self.ylen, self.edge);
   }
 
   var decideAllNodes = function()
@@ -143,7 +164,7 @@ function GameOfLife(params)
     }
   }
 
-  var tick = function()
+  this.tick = function()
   {
     commitAllNodes();
     drawAllNodes();
@@ -151,7 +172,7 @@ function GameOfLife(params)
     self.callback(self);
   };
 
-  this.play  = function(){ if(!ticker) { tick(); ticker = setInterval(tick,Math.round(60000/this.speed)); } };
+  this.play  = function(){ if(!ticker) { self.tick(); ticker = setInterval(self.tick,Math.round(60000/this.speed)); } };
   this.pause = function(){ if(ticker)  ticker = clearInterval(ticker); }
 
   this.clear = function()
@@ -204,5 +225,5 @@ function GameOfLife(params)
   generateAllNodes();
   if(this.startingGrid) this.setPattern(this.startingGrid);
   if(this.autoplay) this.play();
-  else tick();//do one tick to get startingGrid on board
+  else this.tick();//do one tick to get startingGrid on board
 };

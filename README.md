@@ -29,6 +29,7 @@ Format of the params:
       "color":"#000000",   //color of filled nodes (hex string)
       "bgcolor":"#FFFFFF", //color of background (hex string)
       "speed":60, //ticks per minute
+      "edge":"wrap", //the policy for what to do with nodes just off the grid. options are "wrap", "clear", or "set" (NOTE- set results in some pretty weird shiz)
       "autoplay":false, //whether it should start playing automatically on generation
       "callback":function(gol) {}, //function called on every tick
       "parentContainer":document.getElementById("gol"), //DOM element to which gol canvas will be added
@@ -48,13 +49,10 @@ API access:
 
     gol.play(); //Resumes the computation of the game of life if it is currently paused. If not, does nothing.
     gol.pause(); //Pauses the computation of the game of life if it is currently playing. If not, does nothing.
+    gol.tick(); //Manually perform one 'tick' of computation (also will take care of drawing)
     gol.clear(); //Clears all nodes NOTE- takes effect next tick
     gol.randomize(); //Sets all nodes to random values NOTE- takes effect next tick
     gol.setPattern(pattern); //Takes in array of node states (exact same formatting as "startingGrid" property in init params //NOTE- takes effect next tick
     gol.getPattern(); //Returns array of node states reflecting the current state of the grid (exact same formatting as "startingGrid" property in init params
     gol.setNode(x,y); //Sets the node at grid location x,y (top left = 0,0) NOTE- takes effect next tick
     gol.clearNode(x,y); //Clears the node at grid location x,y (top left = 0,0) NOTE- takes effect next tick
-
-
-One last note, for the really picky-
-All nodes "off the grid" are considered permanently cleared, resulting in gliders bunching up into squares on collision.
