@@ -1,4 +1,4 @@
-js-gol
+js-gol (JS Game of Life)
 ======
 
 Javascript library for Conway's Game of Life. (http://en.wikipedia.org/wiki/Conway's_Game_of_Life)
