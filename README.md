@@ -1,7 +1,7 @@
 js-gol
 ======
 
-Javascript API for conway's game of life. (http://en.wikipedia.org/wiki/Conway's_Game_of_Life)
+Javascript library for Conway's Game of Life. (http://en.wikipedia.org/wiki/Conway's_Game_of_Life)
 
 Sample page hosted here- http://www.brokenglider.com/misc/js-gol/sample.html (at least, it WAS hosted there as of Jun 22 2013...)
 
@@ -46,7 +46,7 @@ Format of the params:
                       0,0,0,0,0,0,0,0,0,0]
     }
 
-API accessors:
+API:
 
     gol.play(); //Resumes the computation of the game of life if it is currently paused. If not, does nothing.
     gol.pause(); //Pauses the computation of the game of life if it is currently playing. If not, does nothing.
