@@ -18,7 +18,7 @@ function GameOfLife(params)
   if(params.hasOwnProperty('xlen'))     this.xlen     = params.xlen;     else this.xlen     = 0;
   if(params.hasOwnProperty('ylen'))     this.ylen     = params.ylen;     else this.ylen     = 0;
   if(params.hasOwnProperty('color'))    this.color    = params.color;    else this.color    = "#000000";
-  if(params.hasOwnProperty('bgcolor'))  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "#FFFFFF";
+  if(params.hasOwnProperty('bgcolor'))  this.bgcolor  = params.bgcolor;  else this.bgcolor  = "clear"; //colors also acceptable
   if(params.hasOwnProperty('speed'))    this.speed    = params.speed;    else this.speed    = 60;//ticks per minute
   if(params.hasOwnProperty('edge'))     this.edge     = params.edge;     else this.edge     = "wrap";
   if(params.hasOwnProperty('autoplay')) this.autoplay = params.autoplay; else this.autoplay = false;
@@ -147,8 +147,13 @@ function GameOfLife(params)
 
   var drawAllNodes = function()
   {
-    self.canvas.context.fillStyle = self.bgcolor;
-    self.canvas.context.fillRect(0, 0, self.width, self.height);
+    if(self.bgcolor == "clear")
+      self.canvas.context.clearRect(0, 0, self.width, self.height);
+    else
+    {
+      self.canvas.context.fillStyle = self.bgcolor;
+      self.canvas.context.fillRect(0, 0, self.width, self.height);
+    }
 
     for(var x = 0; x < self.xlen; x++)
       for(var y = 0; y < self.ylen; y++)
